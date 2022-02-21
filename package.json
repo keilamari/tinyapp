@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/keilamari/tinyapp/issues"
   },
-  "homepage": "https://github.com/keilamari/tinyapp#readme"
+  "homepage": "https://github.com/keilamari/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }
