@@ -22,7 +22,7 @@ const generateString = function() {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect('/urls/');
 });
 
 app.get("/urls.json", (req, res) => {
@@ -43,6 +43,12 @@ app.post("/urls", (req, res) => {
   let shortURL = generateString();
   res.redirect(`/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
   urlDatabase[shortURL] = Object.values(req.body)[0];
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {
