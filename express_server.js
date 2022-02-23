@@ -60,6 +60,7 @@ app.post("/logout", (req, res) => {
   res.redirect('/urls');
 });
 
+
 app.post("/urls", (req, res) => {
   let shortURL = generateString();
   res.redirect(`/urls/${shortURL}`);        
@@ -75,6 +76,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = { username: req.cookies.username }
   res.render("urls_new", templateVars);
+});
+
+app.get("/register", (req, res) => {
+  const templateVars = { username: req.cookies.username }
+  res.render("urls_register", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
