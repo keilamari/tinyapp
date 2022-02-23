@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
+const res = require("express/lib/response");
 app.use(bodyParser.urlencoded({extended: true}));
+
 
 app.set("view engine", "ejs");
 
@@ -25,9 +27,9 @@ app.get("/", (req, res) => {
   res.redirect('/urls/');
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
@@ -37,6 +39,17 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
+
+app.post("/urls/urls/:shortURL/EDIT", (req, res) => {
+  // console.log(req.body);
+  // res.redirect('/urls')
+  const shortURL = req.params.shortURL;
+  let newlongURL = Object.values(req.body)[0];
+  urlDatabase[shortURL] = newlongURL;
+  res.redirect('/urls')
+
+})
+
 
 app.post("/urls", (req, res) => {
   console.log(Object.values(req.body));  // Log the POST request body to the console
@@ -48,6 +61,7 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
+  console.log('done')
   res.redirect("/urls");
 });
 
