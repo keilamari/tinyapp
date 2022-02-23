@@ -4,6 +4,8 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const res = require("express/lib/response");
 app.use(bodyParser.urlencoded({extended: true}));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 
 app.set("view engine", "ejs");
@@ -36,41 +38,47 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies.username };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls/urls/:shortURL/EDIT", (req, res) => {
-  // console.log(req.body);
-  // res.redirect('/urls')
   const shortURL = req.params.shortURL;
   let newlongURL = Object.values(req.body)[0];
   urlDatabase[shortURL] = newlongURL;
   res.redirect('/urls')
+});
 
-})
+app.post("/login", (req, res) => {
+  let username =req.body.username;
+  res.cookie('username', username);
+  res.redirect('/urls')
+});
 
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+});
 
 app.post("/urls", (req, res) => {
-  console.log(Object.values(req.body));  // Log the POST request body to the console
   let shortURL = generateString();
-  res.redirect(`/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${shortURL}`);        
   urlDatabase[shortURL] = Object.values(req.body)[0];
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
-  console.log('done')
   res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { username: req.cookies.username }
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies.username };
   res.render("urls_show", templateVars);
 });
 
