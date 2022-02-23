@@ -15,6 +15,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+const users = {
+  "frodo": {
+    id: "frodo",
+    email: "frodo@baggins.ca",
+    password: "oh-sam"
+  },
+  "bilbo": {
+    id: "bilbo",
+    email: "bilbo@baggins.ca",
+    password: "my-precious"
+  }
+};
+
 const generateString = function() {
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -38,7 +51,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies.username };
+  const templateVars = { urls: urlDatabase, user_id: req.cookies.user_id, users: users };
   res.render("urls_index", templateVars);
 });
 
@@ -50,13 +63,18 @@ app.post("/urls/urls/:shortURL/EDIT", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  let username =req.body.username;
-  res.cookie('username', username);
+  let loginItem = req.body.username;
+  console.log(loginItem)
+  for (let user in users) {
+    if (user === loginItem) {
+      res.cookie('user_id', user)
+    }
+  }
   res.redirect('/urls')
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
@@ -74,17 +92,30 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies.username }
+  const templateVars = { user_id: req.cookies.user_id, users: users }
   res.render("urls_new", templateVars);
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies.username }
+  const templateVars = { user_id: req.cookies.user_id, users: users }
   res.render("urls_register", templateVars);
 });
 
+app.post("/register", (req, res) => {
+  let newEmail = (req.body.email);
+  let newPassword = (req.body.password);
+  let newId = generateString();
+  users[newId] = {
+    id: newId,
+    email: newEmail,
+    password: newPassword
+  }
+  res.cookie('user_id', newId);
+  res.redirect('/urls');
+});
+
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies.username };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user_id: req.cookies.user_id, users: users };
   res.render("urls_show", templateVars);
 });
 
