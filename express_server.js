@@ -59,9 +59,7 @@ const emailPassword = function(database, email, password) {
     if (email === user.email) {
       if(password === user.password) {
         return true;
-      } else {
-        return false;
-      }
+      } 
     }
   }
 };
