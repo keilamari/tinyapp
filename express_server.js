@@ -26,6 +26,11 @@ const users = {
     id: "bilbo",
     email: "bilbo@baggins.ca",
     password: "my-precious"
+  },
+  "gandalf": {
+    id: "gandalf",
+    email: "thegrey@wizard.com",
+    password: "ushallnotpass"
   }
 };
 
@@ -43,8 +48,30 @@ const findEmail = function(database, newEmail) {
   for (let id in database) {
     let user = database[id];
     if (newEmail === user.email) {
-      return(newEmail)
+      return true;
+    } 
+  }
+};
+
+const emailPassword = function(database, email, password) {
+  for (let id in database) {
+    let user = database[id];
+    if (email === user.email) {
+      if(password === user.password) {
+        return true;
+      } else {
+        return false;
+      }
     }
+  }
+};
+
+const getID = function(database, email) {
+  for (let item in database) {
+    let user = database[item];
+    if (user.email === email) {
+      return user.id;
+    } 
   }
 }
 
@@ -78,14 +105,16 @@ app.get("/login", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  let loginItem = req.body.username;
-  console.log(loginItem)
-  for (let user in users) {
-    if (user === loginItem) {
-      res.cookie('user_id', user)
+  let loginItem = req.body.email;
+  let pass = req.body.password;
+  if (findEmail(users, loginItem)) {
+    if (emailPassword(users, loginItem, pass)) {
+      res.cookie('user_id', (getID(users, loginItem)))
+      res.redirect('/urls');
+    } else {
+      res.status(403).send('403: Forbidden')
     }
-  }
-  res.redirect('/urls')
+  } 
 });
 
 app.post("/logout", (req, res) => {

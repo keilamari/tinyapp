@@ -9,13 +9,15 @@
 <body>
   <%- include('partials/_header') %>
   <div class="card-header"></div>
-  <div class="card text-center">
+  <div class="card text-left">
       <div class="card-body">
-        <h5 class="card-title">Registration Page</h5>
+        <h5 class="card-title">Create Account</h5>
         <td><form method="POST" action="/register">
-          <input type="email" name="email"/>
-          <input type="password" name="password"/>
-          <button type="submit">Submit</button>
+          <p>New Email: </p>
+          <p><input type="email" name="email"/></p>
+          <p>Password: </p>
+          <p><input type="password" name="password"/></p>
+          <p><button type="submit">Submit</button></p>
         </form></td>
     <div class="card-footer text-muted"></div>
   </div>
