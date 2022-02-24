@@ -12,8 +12,14 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "frodo"
+  },  
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "bilbo"
+  }
 };
 
 const users = {
@@ -73,6 +79,42 @@ const getID = function(database, email) {
   }
 }
 
+const getLongURL = function(database, shortURL) {
+  for (let item in database) {
+    if (item === shortURL) {
+      let info = database[shortURL]
+      return info.longURL;
+    }
+  }
+}
+
+const editedURL = function(database, shortURL, newURL) {
+  for (let item in database) {
+    let entry = database[item];
+    if (item === shortURL) {
+      entry.longURL = newURL;
+    }
+  }
+};
+
+const addURL = function(urlDatabase, longURL, userID) {
+  if (longURL) {
+      let shortURL = generateString();
+    for (let item in urlDatabase) {
+      urlDatabase[shortURL] = {longURL: longURL, userID: userID};
+
+    }
+  }
+};
+
+const checkShortURL = function(urlDatabase, shortURL) {
+  for (let i in urlDatabase) {
+    if (shortURL === i) {
+      return true;
+    } 
+  }
+}
+
 app.get("/", (req, res) => {
   res.redirect('/urls/');
 });
@@ -81,19 +123,22 @@ app.get("/", (req, res) => {
 //   res.json(urlDatabase);
 // });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
 
 app.get("/urls", (req, res) => {
+  if (req.cookies.user_id) {
   const templateVars = { urls: urlDatabase, user_id: req.cookies.user_id, users: users };
-  res.render("urls_index", templateVars);
+  res.render("urls_index", templateVars); }
+  else {
+    res.status(401).send(res.redirect('/login'))
+  }
 });
 
 app.post("/urls/urls/:shortURL/EDIT", (req, res) => {
   const shortURL = req.params.shortURL;
   let newlongURL = Object.values(req.body)[0];
-  urlDatabase[shortURL] = newlongURL;
+  editedURL(urlDatabase, shortURL, newlongURL)
+
+  
   res.redirect('/urls')
 });
 
@@ -110,7 +155,7 @@ app.post("/login", (req, res) => {
       res.cookie('user_id', (getID(users, loginItem)))
       res.redirect('/urls');
     } else {
-      res.status(403).send('403: Forbidden')
+      res.status(401).send(res.redirect('/login'))
     }
   } 
 });
@@ -121,21 +166,34 @@ app.post("/logout", (req, res) => {
 });
 
 
-app.post("/urls", (req, res) => {
-  let shortURL = generateString();
-  res.redirect(`/urls/${shortURL}`);        
-  urlDatabase[shortURL] = Object.values(req.body)[0];
+app.post("/urls/", (req, res) => {
+  if (req.cookies.user_id) {
+  addURL(urlDatabase, req.body.longURL, req.cookies.user_id) 
+  res.redirect(`/urls`)
+}
+  else {
+    res.status(401).send(res.redirect('/login'))
+    
+  }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  if (req.cookies.user_id) {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
-  res.redirect("/urls");
+  res.redirect("/urls"); }
+  else {
+    res.status(401).send(res.redirect('/login'))
+  }
 });
 
 app.get("/urls/new", (req, res) => {
+  if (req.cookies.user_id) {
   const templateVars = { user_id: req.cookies.user_id, users: users }
-  res.render("urls_new", templateVars);
+  res.render("urls_new", templateVars); }
+  else {
+    res.status(401).send(res.redirect('/login'))
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -161,13 +219,19 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user_id: req.cookies.user_id, users: users };
+  const templateVars = { shortURL: req.params.shortURL, longURL: getLongURL(urlDatabase, req.params.shortURL), user_id: req.cookies.user_id, users: users };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+    let shortURL = req.params.shortURL;
+    if (checkShortURL(urlDatabase, shortURL)) {
+      const longURL = getLongURL(urlDatabase, req.params.shortURL);
+    console.log(req.params.shortURL)
+    res.redirect(longURL);
+  } else { 
+    res.status(404).send('URL not logged')
+  }
 });
 
 app.listen(PORT, () => {
