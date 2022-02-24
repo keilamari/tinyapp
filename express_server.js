@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const res = require("express/lib/response");
 app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser');
+const { response } = require("express");
 app.use(cookieParser());
 
 
@@ -37,6 +38,15 @@ const generateString = function() {
   }
   return result;
 };
+
+const findEmail = function(database, newEmail) {
+  for (let id in database) {
+    let user = database[id];
+    if (newEmail === user.email) {
+      return(newEmail)
+    }
+  }
+}
 
 app.get("/", (req, res) => {
   res.redirect('/urls/');
@@ -104,6 +114,9 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let newEmail = (req.body.email);
   let newPassword = (req.body.password);
+  if (findEmail(users, newEmail) || newEmail === "" || newPassword === "") {
+    res.status(400).send('400: Bad Request')
+  } else {
   let newId = generateString();
   users[newId] = {
     id: newId,
@@ -111,6 +124,7 @@ app.post("/register", (req, res) => {
     password: newPassword
   }
   res.cookie('user_id', newId);
+  }
   res.redirect('/urls');
 });
 
