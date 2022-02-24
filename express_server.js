@@ -72,6 +72,11 @@ app.post("/urls/urls/:shortURL/EDIT", (req, res) => {
   res.redirect('/urls')
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { user_id: req.cookies.user_id, users: users }
+  res.render("login_form", templateVars);
+})
+
 app.post("/login", (req, res) => {
   let loginItem = req.body.username;
   console.log(loginItem)
