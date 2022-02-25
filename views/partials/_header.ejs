@@ -13,8 +13,8 @@
         <% for(let user in users) { %>
         <td><% let use = users[user] %> </td>
         <td><% if(user === user_id) { %> </td>
-        <h1>Logged in as <%= use.email%></h1>
-        <form method="POST" action="/logout"><button type="submit">LOGOUT</button></form>
+        <a class="nav-item nav-link">Logged in as <%= use.email%></a>
+        <form method="POST" action="/logout"><button type="submit" class="btn btn-primary">LOGOUT</button></form>
         <% } %>
         <% } %>
         <% } else { %>
