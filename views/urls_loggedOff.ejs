@@ -11,24 +11,6 @@
 <body>
   <%- include('partials/_header') %>
   <main style="margin: 1em;">
-    <h3>URLs</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(let i in urls) { %>
-          <% let url = urls[i] %>
-          <tr>
-            <td><%= i %></td>
-            <td><%= url.longURL %></td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
     <h3>Make sure to <a href="/login">log in</a> or <a href="/register">register</a></h3>
   </main>
   <!-- Bootstrap JS -->

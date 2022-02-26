@@ -7,22 +7,20 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <% if (user_id) { %>
-        <% for(let user in users) { %>
-        <td><% let use = users[user] %> </td>
-        <td><% if(user === user_id) { %> </td>
-        <a class="nav-item nav-link">Logged in as <%= use.email%></a>
-        <form method="POST" action="/logout"><button type="submit" class="btn btn-primary">LOGOUT</button></form>
+       <%  if (user_id) { %>
+          <% for (let user in users) { %>
+            <% let use = users[user]; %>
+            <% if(user === user_id) { %>
+              <a class="nav-item nav-link" href="/urls">My URLs</a>
+              <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+             <a class="nav-item nav-link">Logged in as <%= use.email%></a> 
+            <form method="POST" action="/logout"><button type="submit" class="btn btn-primary">LOGOUT</button></form>
+            <% } %>
+          <% } %>
+        <% } else { %> 
+             <a class="nav-item nav-link" href="/login">Login</a>
+             <a class="nav-item nav-link" href="/register">Register</a>
         <% } %>
-        <% } %>
-        <% } else { %>
-          <a class="nav-item nav-link" href="/login">Login</a>
-          <a class="nav-item nav-link" href="/register">Register</a>
-          
-        <% } %>
-
 
       </div>
  

@@ -35,27 +35,35 @@ findEmail(database, newEmail) {
   }
 },
 
-getLongURL(database, shortURL) {
+getLongURL(database, id) {
   for (let item in database) {
-    if (item === shortURL) {
-      let info = database[shortURL];
+    if (item === id) {
+      let info = database[id];
       return info.longURL;
     }
   }
 },
 
-editedURL(database, shortURL, newURL) {
+editedURL(database, id, newURL) {
   for (let item in database) {
     let entry = database[item];
-    if (item === shortURL) {
+    if (item === id) {
       entry.longURL = newURL;
     }
   }
 },
-checkShortURL(urlDatabase, shortURL) {
+checkShortURL(urlDatabase, id) {
   for (let i in urlDatabase) {
-    if (shortURL === i) {
+    if (id === i) {
       return true;
+    }
+  }
+},
+getShortURL(database, longURL) {
+  for (let item in database) {
+    let entry = database[item];
+    if (entry.longURL === longURL) {
+      return item;
     }
   }
 },
@@ -67,8 +75,17 @@ filteredURL(database, name) {
       returnObj[i] = x;
     }
   } return returnObj;
+},
+ownedURL(database, user, id) {
+  for (let item in database) {
+    let account = database[item];
+    if (account.userID === user && item === id) {
+      return true;
+    }
+  }
 }
-}
+};
+
 
 module.exports = functions
 
